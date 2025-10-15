@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>¡Sorteo de Vacaciones! 🏖️</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4, #a1c4fd);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      overflow-x: hidden;
+    }
+
+    .container {
+      background: white;
+      padding: 3rem;
+      border-radius: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      max-width: 90%;
+      animation: bounceIn 1s ease-out;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0.6); opacity: 0; }
+      70% { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      color: #ff6b6b;
+      margin-bottom: 1.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .names {
+      font-size: 1.8rem;
+      margin: 1.5rem 0;
+      color: #4a4a4a;
+    }
+
+    .winner {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #ff4757;
+      margin: 2rem 0;
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    button {
+      background: #ff9f43;
+      border: none;
+      padding: 15px 40px;
+      font-size: 1.4rem;
+      border-radius: 50px;
+      cursor: pointer;
+      color: white;
+      font-weight: bold;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #ff6b35;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background-color: #f00;
+      opacity: 0;
+    }
+
+    footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎉 ¡Sorteo de Vacaciones! 🏝️</h1>
+    <p class="names">Entre <strong>Alex</strong> y <strong>Sam</strong></p>
+    
+    <div id="winner" class="winner">¿Quién se va de vacaciones?</div>
+    
+    <button onclick="sortear()">¡SORTEAR AHORA!</button>
+
+    <footer>
+      Hecho con ❤️ y un poco de suerte
+    </footer>
+  </div>
+
+  <script>
+    const participantes = ["Alex", "Sam"];
+    let sorteado = false;
+
+    function sortear() {
+      if (sorteado) return; // Evita múltiples sorteos
+
+      const winnerDiv = document.getElementById("winner");
+      winnerDiv.textContent = "¡Calculando destino...!";
+      winnerDiv.style.color = "#3742fa";
+
+      // Simular "carga" divertida
+      setTimeout(() => {
+        const ganador = participantes[Math.floor(Math.random() * participantes.length)];
+        winnerDiv.textContent = `¡${ganador} se va de VACACIONES! 🎊`;
+        winnerDiv.style.color = "#ff4757";
+        sorteado = true;
+        lanzarConfeti();
+      }, 2000);
+    }
+
+    function lanzarConfeti() {
+      const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"];
+      for (let i = 0; i < 150; i++) {
+        const confeti = document.createElement("div");
+        confeti.className = "confetti";
+        confeti.style.left = Math.random() * 100 + "vw";
+        confeti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confeti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
+        document.body.appendChild(confeti);
+
+        // Eliminar confeti después de la animación
+        setTimeout(() => {
+          confeti.remove();
+        }, 5000);
+      }
+
+      // Agregar animación de caída al CSS dinámicamente
+      if (!document.getElementById("confeti-style")) {
+        const style = document.createElement("style");
+        style.id = "confeti-style";
+        style.innerHTML = `
+          @keyframes fall {
+            0% { top: -10%; opacity: 1; transform: rotate(0deg); }
+            100% { top: 110%; opacity: 0; transform: rotate(360deg); }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+    }
+  </script>
+</body>
+</html>
