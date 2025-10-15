@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>¡Sorteo de Vacaciones! 🏖️</title>
+  <title>¡Ruleta de Vacaciones! 🏖️</title>
   <style>
     body {
       margin: 0;
@@ -16,55 +16,52 @@
       align-items: center;
       text-align: center;
       overflow-x: hidden;
+      color: #333;
     }
 
     .container {
       background: white;
-      padding: 3rem;
+      padding: 2.5rem;
       border-radius: 25px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       max-width: 90%;
-      animation: bounceIn 1s ease-out;
+      animation: fadeIn 1s ease-out;
     }
 
-    @keyframes bounceIn {
-      0% { transform: scale(0.6); opacity: 0; }
-      70% { transform: scale(1.05); }
-      100% { transform: scale(1); opacity: 1; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     h1 {
-      font-size: 2.8rem;
+      font-size: 2.6rem;
       color: #ff6b6b;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.2rem;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     }
 
-    .names {
-      font-size: 1.8rem;
-      margin: 1.5rem 0;
-      color: #4a4a4a;
-    }
-
-    .winner {
-      font-size: 3rem;
+    #display {
+      font-size: 4rem;
       font-weight: bold;
-      color: #ff4757;
       margin: 2rem 0;
-      text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
-      animation: pulse 1.5s infinite;
+      min-height: 60px;
+      color: #ff4757;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.15);
+      transition: all 0.1s ease;
     }
 
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); }
+    #message {
+      font-size: 1.4rem;
+      margin: 1.2rem 0;
+      min-height: 28px;
+      color: #555;
+      font-style: italic;
     }
 
     button {
       background: #ff9f43;
       border: none;
-      padding: 15px 40px;
+      padding: 16px 45px;
       font-size: 1.4rem;
       border-radius: 50px;
       cursor: pointer;
@@ -80,16 +77,10 @@
       box-shadow: 0 8px 16px rgba(0,0,0,0.25);
     }
 
-    button:active {
-      transform: translateY(1px);
-    }
-
-    .confetti {
-      position: fixed;
-      width: 10px;
-      height: 10px;
-      background-color: #f00;
-      opacity: 0;
+    button:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+      transform: none;
     }
 
     footer {
@@ -101,63 +92,109 @@
 </head>
 <body>
   <div class="container">
-    <h1>🎉 ¡Sorteo de Vacaciones! 🏝️</h1>
-    <p class="names">Entre <strong>Manu</strong> y <strong>David</strong></p>
+    <h1>🎡 ¡Ruleta de Vacaciones! 🏖️</h1>
     
-    <div id="winner" class="winner">¿Quién se va de vacaciones?</div>
+    <div id="display">¿Manu o David?</div>
+    <div id="message">Haz clic para comenzar el sorteo...</div>
     
-    <button onclick="sortear()">¡SORTEAR AHORA!</button>
+    <button id="sortearBtn" onclick="iniciarSorteo()">¡GIRAR LA RULETA!</button>
 
     <footer>
-      Hecho con ❤️ y un poco de suerte
+      Hecho con ❤️ y un poco de caos controlado
     </footer>
   </div>
 
   <script>
-    const participantes = ["Manu", "David"];
+    const nombres = ["Manu", "David"];
+    const mensajes = [
+      "¡El destino está en movimiento!",
+      "¿Será Manu... o David?",
+      "La suerte está girando...",
+      "¡Alguien se va a la playa!",
+      "Vacaciones en juego...",
+      "¡No mires! (pero mira)",
+      "El universo decide...",
+      "¿Quién merece descansar?",
+      "¡Casi, casi...!",
+      "¡El azar no perdona!",
+      "Prepárate para el veredicto..."
+    ];
+
+    let intervalo = null;
     let sorteado = false;
+    const display = document.getElementById("display");
+    const messageEl = document.getElementById("message");
+    const btn = document.getElementById("sortearBtn");
 
-    function sortear() {
-      if (sorteado) return; // Evita múltiples sorteos
+    function iniciarSorteo() {
+      if (sorteado) return;
 
-      const winnerDiv = document.getElementById("winner");
-      winnerDiv.textContent = "¡Calculando destino...!";
-      winnerDiv.style.color = "#3742fa";
+      // Reiniciar estado
+      sorteado = true;
+      btn.disabled = true;
+      let paso = 0;
+      const duracionTotal = 5000; // 5 segundos
+      const inicio = Date.now();
 
-      // Simular "carga" divertida
-      setTimeout(() => {
-        const ganador = participantes[Math.floor(Math.random() * participantes.length)];
-        winnerDiv.textContent = `¡${ganador} se va de VACACIONES! 🎊`;
-        winnerDiv.style.color = "#ff4757";
-        sorteado = true;
-        lanzarConfeti();
-      }, 2000);
+      // Mensaje inicial
+      messageEl.textContent = "¡Girando...!";
+
+      // Empezar animación rápida
+      intervalo = setInterval(() => {
+        const transcurrido = Date.now() - inicio;
+        const progreso = transcurrido / duracionTotal;
+
+        // Cambiar nombre rápidamente
+        display.textContent = nombres[paso % 2];
+        paso++;
+
+        // Cambiar mensaje cada cierto tiempo
+        if (paso % 15 === 0) {
+          const msg = mensajes[Math.floor(Math.random() * mensajes.length)];
+          messageEl.textContent = msg;
+        }
+
+        // Desacelerar al final
+        if (transcurrido >= duracionTotal) {
+          clearInterval(intervalo);
+          const ganador = nombres[Math.floor(Math.random() * nombres.length)];
+          display.textContent = `¡${ganador}!`;
+          messageEl.textContent = `🎉 ¡${ganador} se va de VACACIONES! 🏝️`;
+          btn.textContent = "Sorteo completado";
+          lanzarConfeti();
+        }
+      }, 80); // Cambia cada 80ms (~12.5 veces por segundo)
     }
 
     function lanzarConfeti() {
-      const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"];
-      for (let i = 0; i < 150; i++) {
+      const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff", "#ff9900"];
+      for (let i = 0; i < 200; i++) {
         const confeti = document.createElement("div");
-        confeti.className = "confetti";
+        confeti.className = "confeti";
         confeti.style.left = Math.random() * 100 + "vw";
         confeti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
         confeti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
+        confeti.style.opacity = "0.9";
+        confeti.style.width = Math.random() * 10 + 5 + "px";
+        confeti.style.height = confeti.style.width;
         document.body.appendChild(confeti);
 
-        // Eliminar confeti después de la animación
-        setTimeout(() => {
-          confeti.remove();
-        }, 5000);
+        setTimeout(() => confeti.remove(), 5000);
       }
 
-      // Agregar animación de caída al CSS dinámicamente
       if (!document.getElementById("confeti-style")) {
         const style = document.createElement("style");
         style.id = "confeti-style";
         style.innerHTML = `
           @keyframes fall {
             0% { top: -10%; opacity: 1; transform: rotate(0deg); }
-            100% { top: 110%; opacity: 0; transform: rotate(360deg); }
+            100% { top: 110%; opacity: 0; transform: rotate(${Math.random() > 0.5 ? '360' : '-360'}deg); }
+          }
+          .confeti {
+            position: fixed;
+            top: -10%;
+            pointer-events: none;
+            z-index: 1000;
           }
         `;
         document.head.appendChild(style);
